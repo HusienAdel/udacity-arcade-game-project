@@ -1,3 +1,21 @@
 body {
     text-align: center;
 }
+
+.btn {
+  display: block;
+}
+
+.modal {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.modal-content {
+
+}
+
+.show-modal {
+  opacity: 1;
+  visibility: visible;
+}
