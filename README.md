@@ -3,7 +3,8 @@ frontend-nanodegree-arcade-game
 
 This project is for the Udacity Frontend Nanodegree. Starter files where provided [here](https://github.com/udacity/frontend-nanodegree-arcade-game).
 
-You can play the game [here](https://vier31.github.io/arcade-game/).
+You can play the game online [here](https://vier31.github.io/arcade-game/).
+To play it offline, just download or clone the repo and open up index.html in a contemporary browser of your choice.
 
 Objective
 ---------
