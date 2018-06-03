@@ -83,6 +83,11 @@ class Player extends Character {
       super.render();
     }
 
+    reset() {
+      player.x = 200;
+      player.y = 400;
+    }
+
     handleInput(e){
       if (win === false) {
         if (e === 'left' && player.x > 0) {
@@ -145,13 +150,11 @@ const game = {
     win = false;
     game.toggleModal();
     game.init();
+    player.reset();
   },
 
   init() {
     spawnTimer();
-
-    player.x = 200;
-    player.y = 400;
   },
 };
 
