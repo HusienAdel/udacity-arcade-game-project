@@ -79,6 +79,10 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
+
+        // Filter the enemies that are of canvas out of the allEnemies array.
+        allEnemies = allEnemies.filter(enemy => enemy.y <= 600);
+
     }
 
     /* This is called by the update function and loops through all of the
