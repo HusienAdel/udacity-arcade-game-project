@@ -1,9 +1,62 @@
 // TODO: enemies check for collision amongst eachother, adjust their speed to the one in front of them.
 //TODO winning dance animation
 //TODO score
+// TODO: Timer
 // TODO: lives
 
 "use strict"
+
+class Game {
+
+  constructor() {
+
+  }
+
+  spawnEnemies() {
+      enemyCount++;
+      const enemy = new Enemy(enemyCount);
+      allEnemies.push(enemy);
+
+      if (enemyCount >= 20) {
+        enemyCount = 0;
+      };
+      //Question: Are the objects, that are filtered out, collected by the JS garbage collection? This is my attempt to not fill up memory with unneeded enemy objects.
+      allEnemies = allEnemies.filter(enemy => enemy.x <= 600);
+  }
+
+  checkCollisionWithPlayer(x, y, radius) {
+      let dx = x - player.x;
+      let dy = y - player.y;
+      let distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < radius + player.radius) {
+        player.reset();
+      }
+  }
+
+  playerWon() {
+    win = true;
+    stopSpawnTimer();
+    this.toggleModal();
+  }
+
+  reset() {
+    win = false;
+    this.toggleModal();
+    this.init();
+    player.reset();
+  }
+
+  toggleModal() {
+    modal.classList.toggle('show-modal');
+  }
+
+  init() {
+    spawnTimer();
+  }
+};
+
+const game = new Game();
 
 let randomInteger = function(max) {
   return Math.floor(Math.random() * Math.floor(max));
@@ -45,7 +98,8 @@ class Character {
   render() {
       ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
   }
-}
+};
+
 // Enemies our player must avoid
 class Enemy extends Character{
 
@@ -63,9 +117,6 @@ class Enemy extends Character{
     }
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 class Player extends Character {
     constructor(sprite, x, y, radius, speed, name) {
       super('images/char-boy.png', 200, 400, 20, 0, 'player1');
@@ -73,8 +124,8 @@ class Player extends Character {
 
     update(dt){
       // check if winning condition is met
-      if (player.y === 0) {
-        player.y = -10;
+      if (this.y === 0) {
+        this.y = -10;
         game.playerWon();
       }
     }
@@ -84,79 +135,29 @@ class Player extends Character {
     }
 
     reset() {
-      player.x = 200;
-      player.y = 400;
+      this.x = 200;
+      this.y = 400;
     }
 
     handleInput(e){
       if (win === false) {
-        if (e === 'left' && player.x > 0) {
-            player.x -= 100;
+        if (e === 'left' && this.x > 0) {
+            this.x -= 100;
           }
-          if (e === 'right' && player.x < 400) {
-            player.x += 100;
+          if (e === 'right' && this.x < 400) {
+            this.x += 100;
           }
-          if (e === 'up' && player.y > 0) {
-            player.y -= 100;
+          if (e === 'up' && this.y > 0) {
+            this.y -= 100;
           }
-          if (e === 'down' && player.y < 400) {
-            player.y += 100;
-          }
-        };
+          if (e === 'down' && this.y < 400) {
+            this.y += 100;
+        }
       };
-
-      reset() {
-        player.x = 200;
-        player.y = 400;
-      };
+    };
 };
 
 const player = new Player();
-
-const game = {
-  spawnEnemies() {
-    enemyCount++;
-    const enemy = new Enemy(enemyCount);
-    allEnemies.push(enemy);
-
-    if (enemyCount >= 20) {
-      enemyCount = 0;
-    };
-    //Question: Are the objects, that are filtered out, collected by the JS garbage collection? This is my attempt to not fill up memory with unneeded enemy objects.
-    allEnemies = allEnemies.filter(enemy => enemy.x <= 600);
-  },
-
-  checkCollisionWithPlayer(x, y, radius) {
-      let dx = x - player.x;
-      let dy = y - player.y;
-      let distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < radius + player.radius) {
-        player.reset();
-      }
-  },
-
-  playerWon() {
-    win = true;
-    stopSpawnTimer();
-    game.toggleModal();
-  },
-
-  toggleModal() {
-    modal.classList.toggle('show-modal');
-  },
-
-  reset() {
-    win = false;
-    game.toggleModal();
-    game.init();
-    player.reset();
-  },
-
-  init() {
-    spawnTimer();
-  },
-};
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method.
@@ -168,11 +169,13 @@ document.addEventListener('keydown', function(e) {
         39: 'right',
         40: 'down'
     };
-
+hello,
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-newGameButton.addEventListener('click', game.reset);
+// Binding 'this' to the reset function, otherwise it's set to the button, invoking the function.
+const resetGame = game.reset.bind(game);
+newGameButton.addEventListener('click', resetGame);
 
 window.onload = function() {
   game.init();
