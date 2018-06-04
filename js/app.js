@@ -169,7 +169,6 @@ document.addEventListener('keydown', function(e) {
         39: 'right',
         40: 'down'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
