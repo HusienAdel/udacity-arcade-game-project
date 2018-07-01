@@ -1,8 +1,19 @@
+/*Arcade Game style by: Husien Adel*/
+
+html {font-size: 16px;}
 body {
     text-align: center;
     font-family: sans-serif;
+    background: linear-gradient(315deg, transparent 75%, #d45d55 0)-10px 0,
+    linear-gradient(45deg, transparent 75%, #d45d55 0)-10px 0,
+    linear-gradient(135deg, #a7332b 50%, transparent 0) 0 0,
+    linear-gradient(45deg, #6a201b 50%, #561a16 0) 0 0 #561a16;
+    background-size: 20px 20px;
+    color: #fff;
+    font-family: 'Pacifico',arial;
 }
-
+h1 {text-transform: capitalize; font-size: 3rem;}
+h2{text-transform: capitalize; color: yellow; font-size: 1.5rem;}
 .btn {
   display: block;
 }
@@ -19,4 +30,28 @@ body {
 .show-modal {
   opacity: 1;
   visibility: visible;
+}
+
+#new-game {
+   display: block;
+   width: 150px;
+   background-color: #fff;
+   border: none; text-align: center;
+   padding: 15px 0;
+   margin: 0 auto;
+   border-radius: 25px;
+   -webkit-box-shadow: 0 0 15px rgba(0,0,0,0.2);
+   box-shadow: 0 0 15px rgba(0,0,0,0.2);
+   -webkit-transition: all .3s;
+   -o-transition: all .3s;
+   transition: all .3s;
+
+}
+#new-game:hover {
+   width: 175px;
+   cursor: pointer;
+}
+
+canvas {
+   margin: 0 auto;
 }

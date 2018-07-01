@@ -1,181 +1,127 @@
-// TODO: enemies check for collision amongst eachother, adjust their speed to the one in front of them.
-//TODO winning dance animation
-//TODO score
-// TODO: Timer
-// TODO: lives
+/*
+*************************************************
+ p#4 Aracade Game for Udacity By Husien Adel
+*************************************************s
+  */
 
-"use strict"
-
-class Game {
-
-  constructor() {
-
-  }
-
-  spawnEnemies() {
-      enemyCount++;
-      const enemy = new Enemy(enemyCount);
-      allEnemies.push(enemy);
-
-      if (enemyCount >= 20) {
-        enemyCount = 0;
-      };
-      //Question: Are the objects, that are filtered out, collected by the JS garbage collection? This is my attempt to not fill up memory with unneeded enemy objects.
-      allEnemies = allEnemies.filter(enemy => enemy.x <= 600);
-  }
-
-  checkCollisionWithPlayer(x, y, radius) {
-      let dx = x - player.x;
-      let dy = y - player.y;
-      let distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < radius + player.radius) {
-        player.reset();
-      }
-  }
-
-  playerWon() {
-    win = true;
-    stopSpawnTimer();
-    this.toggleModal();
-  }
-
-  reset() {
-    win = false;
-    this.toggleModal();
-    this.init();
-    player.reset();
-  }
-
-  toggleModal() {
-    modal.classList.toggle('show-modal');
-  }
-
-  init() {
-    spawnTimer();
-  }
+// Draw Enemies and the Player onto the screen > no separate render() methods required for player and enamy classes
+Object.prototype.render = function() {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-const game = new Game();
-
-let randomInteger = function(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-};
-
-let win = false;
-
-let allEnemies = [];
-let enemyCount = 0;
-
-
-// This timer seems overly complicated. Any suggestions on how to improve this timer?
-const spawnTimer = function() {
-  const s = setInterval(game.spawnEnemies, spawnFrequency);
-};
-let spawnFrequency = 2000;
-
-function stopSpawnTimer() {
-  clearInterval(spawnTimer);
-};
-
-
-const container = document.querySelector('.container');
-const modal = container.querySelector('.modal')
-const closeButton = modal.querySelector('.close-btn');
-const newGameButton = modal.querySelector('#new-game');
-
-class Character {
-
-  constructor(sprite, x, y, radius, speed, name) {
-    this.sprite = sprite;
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.speed = speed;
-    this.name = name;
-  }
-
-  render() {
-      ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-  }
-};
+//  ENEMY CLASS
 
 // Enemies our player must avoid
-class Enemy extends Character{
-
-    constructor(sprite, x, y, radius, speed, name) {
-      super('images/enemy-bug.png', -100, (randomInteger(3) + 1) * 100, 20, randomInteger(10), `enemy${enemyCount}`);
-    }
-
-    update(dt) {
-        this.x += (this.speed * 50) * dt;
-        game.checkCollisionWithPlayer(this.x, this.y, this.radius);
-    }
-
-    render() {
-      super.render();
-    }
+var Enemy = function(x, y) {
+  // The image/sprite for our enemies, this uses (helper method provided to easily load images)
+  this.sprite = 'images/enemy-bug.png';
+  // Variables applied to each of our instances
+  this.x = x;
+  this.y = y;
+  this.velocity = 100 + Math.floor(Math.random() * 150);
 };
 
-class Player extends Character {
-    constructor(sprite, x, y, radius, speed, name) {
-      super('images/char-boy.png', 200, 400, 20, 0, 'player1');
-    }
-
-    update(dt){
-      // check if winning condition is met
-      if (this.y === 0) {
-        this.y = -10;
-        game.playerWon();
-      }
-    }
-
-    render() {
-      super.render();
-    }
-
-    reset() {
-      this.x = 200;
-      this.y = 400;
-    }
-
-    handleInput(e){
-      if (win === false) {
-        if (e === 'left' && this.x > 0) {
-            this.x -= 100;
-          }
-          if (e === 'right' && this.x < 400) {
-            this.x += 100;
-          }
-          if (e === 'up' && this.y > 0) {
-            this.y -= 100;
-          }
-          if (e === 'down' && this.y < 400) {
-            this.y += 100;
-        }
-      };
-    };
+// Update the enemy's position (loop when off canvas)
+// Multiply any movement by the dt parameter (time delta between ticks), this ensures the game runs at the same speed for all computers.
+Enemy.prototype.update = function(dt) {
+  this.x = this.x + this.velocity * dt;
+  this.collide(player);
+  if (this.x > 1500) {
+    this.x = -200;
+  }
 };
 
-const player = new Player();
+// Reset player to origo when colliding with an enemy
+Enemy.prototype.collide = function(player) {
+  if (Math.abs(player.x - this.x) < 80 && Math.abs(player.y - this.y) < 30) {
+    player.reset();
+  }
+};
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method.
-document.addEventListener('keydown', function(e) {
+//  PLAYER CLASS
 
-    var allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down'
-    };
-    player.handleInput(allowedKeys[e.keyCode]);
-});
+// Player with image and location
+var Player = function () {
+  this.sprite = 'images/char-boy.png';
+  this.x = 200;
+  this.y = 400;
+};
 
-// Binding 'this' to the reset function, otherwise it's set to the button, invoking the function.
-const resetGame = game.reset.bind(game);
-newGameButton.addEventListener('click', resetGame);
+// Moves the player object in the direction of the arrow key clicked
+Player.prototype.handleInput = function (userInput) {
 
-window.onload = function() {
-  game.init();
+  switch (userInput) {
+
+    case 'left':
+    if (player.x >= 50) {
+      player.x -= 100;
+    }
+    break;
+
+    case 'right':
+    if (player.x <= 300) {
+      player.x += 100;
+    }
+    break;
+
+    case 'up':
+    if (player.y > 60) {
+      player.y -= 80;
+    } else {
+      // player.score += 100;
+      player.y = 380;
+      player.x = 200;
+    }
+    break;
+
+    case 'down':
+    if (this.y <= 300) {
+      this.y += 80;
+    }
+    break;
+  }
+};
+
+// Update method for player
+Player.prototype.update = function () {
+};
+
+// Reset Player to start position when reaching water or colliding with enemy
+Player.prototype.reset = function() {
+  player.x = 200;
+  player.y = 400;
+};
+
+
+//  player
+
+// Player object is in a variable called player
+var player = new Player();
+
+// All enemy objects in an array called allEnemies
+var allEnemies = [];
+for (var i = 0; i < 3; i++){
+  setTimeout(function(){
+    allEnemies.push(new Enemy(-200, 60));
+  }, 500);
+  setTimeout(function() {
+    allEnemies.push(new Enemy(-250, 150));
+  }, 1500);
+  setTimeout(function() {
+    allEnemies.push(new Enemy(-300, 230));
+  }, 2500);
 }
+
+//  keyBoard listener
+// This listens for key presses and sends the keys to your
+// Player.handleInput() method. You don't need to modify this.
+document.addEventListener('keyup', function(e) {
+  var allowedKeys = {
+    37: 'left',
+    38: 'up',
+    39: 'right',
+    40: 'down'
+  };
+
+  player.handleInput(allowedKeys[e.keyCode]);
+});
