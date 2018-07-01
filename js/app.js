@@ -3,7 +3,7 @@
  p#4 Aracade Game for Udacity By Husien Adel
 *************************************************s
   */
-
+'use strict';
 
 //  ENEMY CLASS
 
