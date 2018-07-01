@@ -12,7 +12,12 @@ How to play
 -----------
 >just use your arrows in Keyboard :)
 
-game screenshots
+game screenshot :)
 -----------
 
 ![](images/screenshot.png)
+
+
+Play Online [Demo]
+-----------
+[https://egydes.github.io/udacity-arcade-game-project/](https://egydes.github.io/udacity-arcade-game-project/)
